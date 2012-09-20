@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  NumDesenho_id: 1
+  NomeDesenho: MyString
+
+two:
+  NumDesenho_id: 1
+  NomeDesenho: MyString

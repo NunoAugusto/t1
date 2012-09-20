@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  NumDesenho: 1
+  NumPonto: 1
+  CX: 1
+  CY: 1
+
+two:
+  NumDesenho: 1
+  NumPonto: 1
+  CX: 1
+  CY: 1
