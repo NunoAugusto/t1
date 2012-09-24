@@ -2,7 +2,13 @@ class DesenhozinhosController < ApplicationController
   # GET /desenhozinhos
   # GET /desenhozinhos.json
   def index
-    @desenhozinhos = Desenhozinho.all  
+    @desenhozinhos = Desenhozinho.all
+    if Desenhozinho.count==0
+      @anumd = 1
+    else
+      @anumd = Desenhozinho.maximum("NumDesenho_id")+1
+    end
+   
 
     respond_to do |format|
       format.html # index.html.erb
@@ -13,24 +19,35 @@ class DesenhozinhosController < ApplicationController
   def show
     @desenhozinho = Desenhozinho.find(params[:id])
     
-    #enviar o desenho para o canvas com a func js
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @desenhozinho }
+    if Desenhozinho.count==0
+      @anumd = 1
+    else
+      @anumd = @desenhozinho.NumDesenho_id
     end
+
+    @coords=@desenhozinho.pontinhos.map {|p| [p.CX,p.CY]}
+    @coords = @coords.flatten
+
+    render "index"
   end
   
   # POST /desenhozinhos
   # POST /desenhozinhos.json
   def create
-    @desenhozinho=Desenhozinho.create(:NumDesenho_id=>($anumd) , :NomeDesenho=>"Desenho #{$anumd.to_s}")
-    $ada=params[:ada].split(",").map {|s| s.to_i}
+    if Desenhozinho.count==0
+      @anumd = 1
+    else
+      @anumd = Desenhozinho.maximum("NumDesenho_id")+1
+    end
+    @desenhozinho=Desenhozinho.create(:NumDesenho_id=>@anumd , :NomeDesenho=>"Desenho #{@anumd.to_s}")
+    @ada=params[:ada].split(",").map {|s| s.to_i}
     i=0
 
-    while i<=$ada.length-1
-        Pontinho.create(:NumDesenho=>$anumd ,:NumPonto=>(i+2)/2 , :CX=>$ada[i] , :CY=>$ada[i+1])
+    while i<=@ada.length-1
+        @desenhozinho.pontinhos.create(:NumPonto=>(i+2)/2 , :CX=>@ada[i] , :CY=>@ada[i+1])
         i=i+2     
     end
+    @anumd = @anumd+1
     respond_to do |format|
       format.html {render action: "index"}# index.html.erb
       format.json { render json: @desenhozinhos }
@@ -57,6 +74,7 @@ class DesenhozinhosController < ApplicationController
   # DELETE /desenhozinhos/1.json
 
   def destroy
+    @anumd=1
     @desenhozinhos=Desenhozinho.all
     @pontinhos=Pontinho.all
     if Desenhozinho.exists?

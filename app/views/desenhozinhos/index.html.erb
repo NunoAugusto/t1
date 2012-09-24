@@ -1,280 +1,35 @@
 
-<%= form_tag do %>
- 
-
-
-
-<script type="text/javascript" id="JSID" data-message>
-//CABEÇALHOS DAS FUNCOES
-
-//Vars Globais de JS
-DesenhoActual = new Array(); //estrutura para guardar o desenho atual recoorre-se ao constutor coordenada
-
-var strHTML="";
-
- //numero de cliques no canvas que é igual ao num de pts do desenho
-NumClick=0;
-var LastX; //para guardar o ultimo ponto de modo a fazer o desenho
-var LastY;
-
-document.addEventListener("DOMContentLoaded", init, false); //o orelhas dos eventos
-var ctx; //contexto do canvas
-var BLA;
-// DEFINIÇÃO DE FUNÇÕES
-
-function init() //está sempre À espera do clique no canvas com o listener
-      {
-        var canvas = document.getElementById("myCanvas");
-        canvas.addEventListener("mousedown", getPosition, false);
-        ctx=canvas.getContext("2d");
-      }
-// Constroi a coordenada 
-function coordenada( pini, pfim ) {
-   this.pini = pini;
-   this.pfim = pfim;
-}
-
-function getPosition(event) //DISPARA COM UM CLIQUE NO CANVAS
-{
-   
-    var totalOffsetX = 0;
-    var totalOffsetY = 0;
-    var canvasX = 0;
-    var canvasY = 0;
-    var currentElement = this;
-    //detetar a coordenada no canvas
-    do{
-        totalOffsetX += currentElement.offsetLeft;
-        totalOffsetY += currentElement.offsetTop;
-      }
-    while(currentElement = currentElement.offsetParent)
-
-    canvasX = event.pageX - totalOffsetX;
-    canvasY = event.pageY - totalOffsetY;
-  
-    if (NumClick>0)
-    { 
-      //A ESCREVER no canvas");
-      ctx.beginPath(); 
-      ctx.lineWidth="3";
-      ctx.strokeStyle="blue"; 
-      ctx.moveTo(LastX,LastY);
-      ctx.lineTo(canvasX,canvasY);
-      ctx.stroke(); // Draw it
-      
-    }
-    else
-    {
-   
-    }
-  
-   
-
-    //Actualiza 
-    LastX=canvasX;
-    LastY=canvasY;
-   
-
-    DesenhoActual[NumClick] = new coordenada(canvasX,canvasY);
-    
-    
-   
-   
-    
-    NumClick=NumClick+1;
-
-    return true
-
-}
-
-$(function () 
-{ 
-  $('#GuardaLimpaID').click(function ()
-  {
-  var CodigoContrutor;  
-  if (NumClick<2)
-    {
-      alert("O seu desenho actual não pode ser guardado pois não tem um segmento de recta criado")
-      return false
-    }
-  else
-    {
-      //constroi o array com os pontos das coordenadas do desenho actual que se encontra no canvas
-      strHTML="";
-      for (i=0; i<NumClick-1 ; i++)
-          {     
-          //numpontonodpesenho,x,y  
-          strHTML+= DesenhoActual[i].pini+","+DesenhoActual[i].pfim+","; 
-
-          // DesenhoActual[i].pini.string + "," + DesenhoActual[i].pfim.string);    
-          }  
-         
-      strHTML+= DesenhoActual[NumClick-1].pini+","+DesenhoActual[NumClick-1].pfim+"";
-
-      //LIMPA DESENHO
-      
-      this.value=strHTML;
-      //document.getElementById("ArrayId").innerHTML=strHTML;
-     
-      
-       document.getElementById("ArrayId").value=strHTML;
-      //document.getElementById("JSID").getAttribute("data-message")=strHTML;
-      ctx.fillStyle="white";  
-      ctx.fillRect(0,0,400,200);
-      NumClick=0;
-      alert(document.getElementById("ArrayId").value);
-     
-      return true
-    }
-  })
-});
-
-function DesenhaCanvas(adesenho) //recebe um array de coordenadas ordenado e escreve no canvas as linhas correspondentes a esses pontos
- { 
-  if (adesenho.length==0)
-  {
-  }
-  else
-  {  
-      ctx.fillStyle="white";  
-      ctx.fillRect(0,0,400,200);
-      NumClick=0;
-      for (var i = 0; i <adesenho.length; i=i+2) {
-  
-          //actualiza a var global com o desenho actual para continuar a desenhar-se
-          DesenhoActual[i]=new coordenada(adesenho[i],adesenho[i+1]);
-          DesenhoActual[i]=new coordenada(adesenho[i+2],adesenho[i+3]);
-          
-          //desenha no canvas a partir dos pontos que vieram em adesenho
-          ctx.beginPath(); 
-          ctx.lineWidth="3";
-          ctx.strokeStyle="blue"; 
-          ctx.moveTo(adesenho[i],adesenho[i+1]);
-          ctx.lineTo(adesenho[i+2],adesenho[i+3]);
-          ctx.stroke(); // Draw it
-      
-          LastX=   adesenho[i+2];
-        LastX=   adesenho[i+3];
-                     
-      };
-     NumClick=adesenho.length/2;
-    }
-}  
-
-
-$(function () 
-{
-  $('#ApagaTudoID').click(function () 
-  {
-  
-  var r=confirm("Atenção deseja mesmo apagar todos os desenhos da Base de Dados?");
-  if (r==true)
-      {   
-      NumClick=0;
-
-      //LIMPA DESENHO
-      ctx.fillStyle="white";
-      ctx.fillRect(0,0,400,200);
-    //  this.value="APAGOU OS DESENHOS TODOS DA BD!!!!"
-      //alert(this.value);  
-     }
-
-  else
-     {  
-
-     }
-       
-  return r    
- })
-
-});
-</script>
-
-
 <h1>Problema 1 - Rails e HTML5 Canvas</h1>
 
-
-<%anump=0%>
-
-<%$anumd=0%>
 <%@desenhozinhos=Desenhozinho.all%>
 
 <table border="0" >
   <tr>
     <div type="hidden" id="ArrayId2" value=""></div>
-    <%$ada=%><script type="text/javascript">document.getElementById("ArrayId").value</script>
-ada que é uma var global do ruby ($ada) devia ter o q vai no alert.. mas estou a meter sempre isto qd faço save and clear<%=$ada%>
-    
     <th> Lista de desenhos</th>
-    
     <td id="desNum"> Desenho->
-        <%if Desenhozinho.count==0%>
-            <%= $anumd=1%>
-          <%else%>
-            <%= $anumd=Desenhozinho.maximum("NumDesenho_id")+1 %>
-        <%end%>
+        <%= @anumd %>
     </td> 
   </tr>
   <tr>  
-       <td id="ListaDesenhos">
-            <% @desenhozinhos.each do |d| %>  
-                     <%= link_to d.NomeDesenho,  :NumDesenho_id=>d.NomeDesenho, :onlick => "DesenhaCanvas($ada);" , :remote=>true %>                                
-                    <!-- <%= link_to d.NomeDesenho , :NumDesenho=>d.NomeDesenho %> !-->
-                     <p> 
-            <% end %>
-      </td>
-
-</td>
-
+    <td id="ListaDesenhos">
+      <% @desenhozinhos.each do |d| %>  
+        <%= link_to d.NomeDesenho, d , :onclick=>"DesenhaCanvas(#{@coords});" %> <p> 
+      <% end %>
+    </td>
     <td>
-        <canvas id="myCanvas" width="400" height="200"  style="border:1px solid #000000;" > 
-
-        </canvas>
+      <canvas id="myCanvas" width="400" height="200"  style="border:1px solid #000000;" ></canvas>
     </td>
   </tr>
   <tr>
-    <td> </td>
-    
-    <td>
-      <button href=# id="GuardaLimpaID" type="button"> 
-       <form action="/desenhozinhos/create" method="post">  
-        <input id="ArrayId" name='ada'  type="hidden" >
-        <input type="submit" value="Save and Clear"/>  
-      </form>     
-      </button> 
-
-      <button href=# id="ApagaTudoID" type="button" value="Delete All" onclick="DeleteAll()" > 
-           
-            <%= link_to 'Delete All', '/desenhozinhos/destroy' , :method=>:delete  %>
-                      
-                    
-             
-         </button>      
-
-        <button  type="button" value="valor" onclick="DesenhaCanvas([0,0,200,200]);">constroi um desenho a partir de um array </button>
-
-
-   </td>   
-      </td>
-      
-             
-      <tr>
-        <td id="RowCount"> Num de regs de pontinhos <%= Pontinho.count %> </td>
-      </tr>
-<tr>
-        <td id="RowCountDesenhos"> Num de regs de desenhos <%= Desenhozinho.count %> </td>
-      </tr>
-
- 
+    <td> </td>   
+    <th>
+      <form  href=# id="GuardaLimpaID" action="/desenhozinhos" method="post">  
+        <input id="ArrayId" name='ada'  type="hidden"></input>
+        <input type="submit" value="Save and Clear"></input>  
+      </form>  
+      <button href=# id="ApagaTudoID" type="button" value="Delete All" onclick="DeleteAll();" >
+        <%= link_to 'Delete All', '/desenhozinhos/destroy' , :method=>:delete  %>            
+      </button>
+   </th>
 </table>
-
-<p>
-<%@pontinhos=Pontinho.all%>
-<%@pontinhos.each do |p|%>
-  Numero do Desenho <%=p.NumDesenho%> 
-   Numero do Ponto <%=p.NumPonto%> 
-  Coordenada X <%=p.CX%>
-  Coordenada Y <%=p.CY%><p>
-<% end %>
-<tr>
-<% end %>
